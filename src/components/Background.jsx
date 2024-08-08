@@ -10,7 +10,7 @@ const Background = ({ children }) => {
 	return (
 		<div
 			className={`fixed h-screen w-full text-teal-900 -z-10 ${
-				colorMode == "light" ? "bg-white" : "bg-black"
+				colorMode == "light" ? "bg-teal-300/20" : "bg-black"
 			}`}>
 			<div className="z-10 absolute  blur-3xl -right-56 top-80 bg-teal-400/10 rounded-full h-[1100px] w-[800px] animate-spin-slow hover:bg-cyan-600/15 duration-1000"></div>
 			<div className="z-10 absolute  blur-3xl -left-56 -top-80 bg-cyan-400/20 rounded-full h-[1000px] w-[800px] animate-spin-slow hover:bg-cyan-600/15 duration-1000">

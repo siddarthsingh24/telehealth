@@ -1,12 +1,17 @@
 import { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
-import { BiMicrophone } from 'react-icons/bi';
+import { FaMicrophone } from 'react-icons/fa';
+import { Button, Input } from '@chakra-ui/react';
+import 'regenerator-runtime/runtime'
+import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 
 const Chat = () => {
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [listening, setListening] = useState(false);
   const chatEndRef = useRef(null);
+  const { transcript } = useSpeechRecognition();
 
   // Predefined responses for common medical queries
   const predefinedResponses = {
@@ -15,8 +20,21 @@ const Chat = () => {
     // Add more predefined responses based on common symptoms or questions
   };
 
+
+  const getTranscript = ()=>{
+    if (listening) {
+      SpeechRecognition.stopListening();
+      setListening(false);    
+      handleSubmit();          
+    }
+    else{
+      SpeechRecognition.startListening();
+      setListening(true);
+    }
+  }
+
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e?.preventDefault();
     if (!input.trim()) return;
 
     // Check for predefined responses
@@ -71,13 +89,17 @@ const Chat = () => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
+  useEffect(()=>{
+    setInput(transcript);
+  },[transcript])
+
   return (
-    <div className="max-w-lg mx-auto p-4 border rounded-lg shadow-lg bg-white">
-      <div className="chat-messages space-y-4 mb-4 overflow-y-hidden overflow-scroll ">
+    <div className="w-[80vw] h-[80%] overflow-y-hidden overflow-scroll mx-auto py-2 border rounded-lg shadow-lg absolute bg-black/10">
+      <div className="chat-messages h-[92%] rounded-xl p-4 w-full space-y-4 mb-4 overflow-y-scroll overflow-scroll px-2">
         {messages.map((message, index) => (
           <div
             key={index}
-            className={`message p-2 rounded-lg ${message.type === 'user' ? 'bg-blue-500 text-white self-end' : 'bg-gray-200 text-black self-start'}`}
+            className={`message p-2 border rounded-lg ${message.type === 'user' ? 'bg-teal-500 text-white self-end' : 'bg-gray-200 text-black self-start'}`}
           >
             {message.text}
           </div>
@@ -85,20 +107,32 @@ const Chat = () => {
         {loading && <div className="message p-2 rounded-lg bg-gray-200 text-black">Loading...</div>}
         <div ref={chatEndRef} />
       </div>
-      <form onSubmit={handleSubmit} className="flex">
-        <input
+      <form onSubmit={handleSubmit} className="flex absolute bottom-1 w-full px-2 gap-3">
+        <Input
+          borderColor={'green.500'}
+          focusBorderColor='teal.500'
           type="text"
+          variant={'filled'}
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Type a message..."
-          className="flex-grow p-2 border rounded-l-lg"
+          className="flex-grow p-2 border border-teal-700 rounded-lg"
         />
-        <button
-          type="submit"
-          className="p-2 bg-blue-500 text-white rounded-r-lg hover:bg-blue-600"
+        <Button type='submit' 
+          colorScheme={'teal'}
         >
           Send
-        </button>
+        </Button>
+        <Button
+          variant={listening?"solid":'outline'}
+          colorScheme={listening?"red":'green'}
+          className="p-2 rounded-full"
+          onClick={()=>{
+            getTranscript();
+          }}
+        >
+          <FaMicrophone/>
+        </Button>
       </form>
     </div>
   );
