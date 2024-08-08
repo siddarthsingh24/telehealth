@@ -6,6 +6,7 @@ import { Button, Flex } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { MdDashboard, MdLocalHospital } from "react-icons/md";
 import { IoGrid } from "react-icons/io5";
+import { FaSignInAlt, FaSignOutAlt } from "react-icons/fa";
 
 const Header = () => {
 	const { user, setUser } = useUser();
@@ -13,7 +14,7 @@ const Header = () => {
 	const navigate = useNavigate();
 	return (
 		<div className="fixed top-0 bg-teal-400/20 w-full h-[5vh] flex items-center justify-between px-[5vw] py-[3vh] z-30">
-			<div className="flex items-center gap-1 text-xl font-nun font-black select-none cursor-pointer" onClick={()=>{navigate("/")}}>
+			<div className="flex items-center gap-1 text-2xl font-nun font-black select-none cursor-pointer" onClick={()=>{navigate("/")}}>
         <MdLocalHospital/>
         TeleDoc
       </div>
@@ -28,6 +29,7 @@ const Header = () => {
               {user.displayName}
               <Button
                 colorScheme={signingOut ? "orange" : "red"}
+                rightIcon={!signingOut&&<FaSignOutAlt/>}
                 onClick={() => {
                   signOut(auth);
                   setSigningOut(true);
@@ -43,7 +45,7 @@ const Header = () => {
           ) : (
             <Button
               colorScheme="teal"
-              rightIcon={<MdDashboard />}
+              rightIcon={<FaSignInAlt/>}
               onClick={() => {
                 navigate("/signin");
               }}>
