@@ -12,7 +12,7 @@ import {
   AlertIcon,
 } from '@chakra-ui/react';
 
-const stripePromise = loadStripe('pk_test_51Pl1os098yxd1NopDnzHG6HtbN2aOzc9IKKSvAOfbTOTxtBv3Czu0wydzYNXanPTKx7Nq6GVvJrcKgSySldDbktS00sOlYcmLv'); // Replace with your Stripe publishable key
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_KEY);
 
 const PaymentForm = () => {
   const stripe = useStripe();

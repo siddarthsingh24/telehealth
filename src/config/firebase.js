@@ -1,18 +1,23 @@
 import { initializeApp } from "firebase/app";
-import {browserLocalPersistence, getAuth, setPersistence} from 'firebase/auth'
+import {
+	browserLocalPersistence,
+	getAuth,
+	setPersistence,
+} from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getFunctions } from "firebase/functions";
+
 const firebaseConfig = {
-  apiKey: "AIzaSyDlVwbigwbIC1vjRwbII9Jz8_RR0YvZ4NE",
-  authDomain: "telehealth-f8a5b.firebaseapp.com",
-  projectId: "telehealth-f8a5b",
-  storageBucket: "telehealth-f8a5b.appspot.com",
-  messagingSenderId: "1096800886189",
-  appId: "1:1096800886189:web:14dbf27f7aba254c741524"
+	apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+	authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+	projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+	storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+	messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+	appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
-setPersistence(auth,browserLocalPersistence)
+setPersistence(auth, browserLocalPersistence);
 export const functions = getFunctions(app);
