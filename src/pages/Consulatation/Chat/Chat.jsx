@@ -4,6 +4,8 @@ import { FaMicrophone } from 'react-icons/fa';
 import { Button, Input } from '@chakra-ui/react';
 import 'regenerator-runtime/runtime'
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
+import CountdownTimer from './CountDownTimer';
+import { useNavigate } from 'react-router-dom';
 
 const Chat = () => {
   const [input, setInput] = useState('');
@@ -12,6 +14,7 @@ const Chat = () => {
   const [listening, setListening] = useState(false);
   const chatEndRef = useRef(null);
   const { transcript } = useSpeechRecognition();
+  const navigate = useNavigate();
 
   // Predefined responses for common medical queries
   const predefinedResponses = {
@@ -94,7 +97,8 @@ const Chat = () => {
   },[transcript])
 
   return (
-    <div className="w-[80vw] h-[80%] overflow-y-hidden overflow-scroll mx-auto py-2 border rounded-lg shadow-lg absolute bg-black/10">
+    <>
+      <div className="w-[80vw] h-[80%] overflow-y-hidden overflow-scroll mx-auto py-2 border rounded-lg shadow-lg absolute bg-black/10">
       <div className="chat-messages h-[92%] rounded-xl p-4 w-full space-y-4 mb-4 overflow-y-scroll overflow-scroll px-2">
         {messages.map((message, index) => (
           <div
@@ -135,6 +139,15 @@ const Chat = () => {
         </Button>
       </form>
     </div>
+    <div className='absolute bottom-0 left-0'>
+      <CountdownTimer initialSeconds={'010'} onCountdownEnd={()=>{
+        alert("TIMES UP");
+        setTimeout(() => {
+          navigate("/consultation")
+        }, 1000);
+      }}/>
+    </div>
+    </>
   );
 };
 

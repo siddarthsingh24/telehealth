@@ -55,8 +55,8 @@ const PaymentForm = () => {
 			try {
 				const result = await createPaymentIntent({
 					payment_method_id: id,
-					amount: 5000,
-				}); // Amount in cents
+					amount: 200,
+				});
 
 				if (result.data.success) {
 					setSuccess(true);
