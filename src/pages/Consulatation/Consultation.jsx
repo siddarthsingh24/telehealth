@@ -6,6 +6,7 @@ import {
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 
+
 const Consultation = () => {
 	const [name, setName] = useState();
 	const [age, setAge] = useState();
@@ -14,8 +15,7 @@ const Consultation = () => {
 	const nav = useNavigate();
 	const submitPatientForm = (e) => {
 		e.preventDefault();
-		// form data can be accessed using e.target.elements.
-		console.log(name, age, speciality);
+		console.log(name, age, speciality,gender);
 	};
 	return (
 		<div className="bg-teal-500/20 text-teal-900 rounded-xl space-y-4 p-2 shadow-md">

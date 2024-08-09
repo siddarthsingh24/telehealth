@@ -6,9 +6,9 @@ import { AuthProvider } from "./contexts/AuthContext";
 import { UserProvider } from "./contexts/userContext";
 import Consultation from "./pages/Consulatation/Consultation";
 import ErrorPage from "./pages/ErrorPage";
-import CheckOut from "./pages/Consulatation/Checkout/CheckOut";
 import Header from "./components/Header";
 import Chat from "./pages/Consulatation/Chat/Chat";
+import RazorpayCheckout from "./pages/Consulatation/Checkout/RazorpayCheckOut";
 
 function App() {
 	return (
@@ -33,7 +33,7 @@ function App() {
 								/>
 								<Route
 									path="/pay"
-									element={<CheckOut/>}
+									element={<RazorpayCheckout/>}
 								/>
 								<Route
 									path="/chat"
