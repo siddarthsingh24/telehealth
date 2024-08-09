@@ -1,17 +1,32 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useUser } from "../contexts/userContext";
 import { signOut } from "firebase/auth";
-import { auth } from "../config/firebase";
+import { auth, db } from "../config/firebase";
 import { Button, Flex } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-import { MdDashboard, MdLocalHospital } from "react-icons/md";
+import { MdLocalHospital } from "react-icons/md";
 import { IoGrid } from "react-icons/io5";
 import { FaSignInAlt, FaSignOutAlt } from "react-icons/fa";
+import { useAuth } from "../contexts/AuthContext";
+import { doc, getDoc } from "firebase/firestore";
 
 const Header = () => {
-	const { user, setUser } = useUser();
-	const [signingOut, setSigningOut] = useState(false);
+  const [signingOut, setSigningOut] = useState(false);
 	const navigate = useNavigate();
+  
+	const { user, setUser } = useUser();
+  const {currentUser}=useAuth();
+
+  useEffect(() => {
+    console.log("refresh header...");
+    const loadUser = async ()=>{
+      const userRef = doc(db, "Users", currentUser?.uid);
+      const userSnap = await getDoc(userRef);
+      setUser(userSnap.data());
+    }
+    loadUser();
+  }, [currentUser])
+  
 	return (
 		<div className="fixed top-0 bg-teal-400/20 w-full h-[5vh] flex items-center justify-between px-[5vw] py-[3vh] z-30">
 			<div className="flex items-center gap-1 text-2xl font-nun font-black select-none cursor-pointer" onClick={()=>{navigate("/")}}>

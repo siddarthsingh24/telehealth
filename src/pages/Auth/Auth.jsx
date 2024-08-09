@@ -7,8 +7,7 @@ import {
 } from "firebase/auth";
 import { auth, db } from "../../config/firebase";
 import { useNavigate } from "react-router-dom";
-import { doc, getDoc, setDoc } from "firebase/firestore";
-import { useUser } from "../../contexts/userContext";
+import { doc, setDoc } from "firebase/firestore";
 import { useAuth } from "../../contexts/AuthContext";
 
 const Auth = () => {
@@ -19,16 +18,7 @@ const Auth = () => {
 	const [Remail, setREmail] = useState("");
 	const [confirmPassword, setConfirmPassword] = useState("");
 	const navigate = useNavigate();
-	const { setUser } = useUser();
 	const { currentUser } = useAuth();
-
-	const loadUser = async ()=>{
-			const userRef = doc(db, "Users", currentUser?.uid);
-			const userSnap = await getDoc(userRef);
-			setUser(userSnap.data());
-			console.log("Signed in successfully");
-			navigate("/");
-	}
 	const login = async () => {
 		try {
 			await signInWithEmailAndPassword(auth, email, password);
@@ -48,9 +38,9 @@ const Auth = () => {
 	};
 	useEffect(()=>{
 		if (currentUser) {
-			loadUser();		
+			navigate("/");
 		}
-	},[currentUser])
+	},[currentUser,navigate])
 	return (
 		<div className="flex items-center justify-center h-full w-full">
 			<div className="bg-gradient-to-tl from-teal-900/20 to-teal-200/40 text-teal-700 border-teal-400  px-[5vw] py-10 text-center space-y-4 border rounded-xl relative">
