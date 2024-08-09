@@ -38,7 +38,7 @@ const Auth = () => {
 	};
 	const register = async () => {
 		await createUserWithEmailAndPassword(auth, Remail, Rpassword);
-		await setDoc(doc(db, "Users", currentUser.uid), {
+		await setDoc(doc(db, "Users", currentUser?.uid), {
 			email: currentUser.email,
 			displayName: name,
 			id: currentUser.uid,
