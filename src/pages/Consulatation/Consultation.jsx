@@ -1,31 +1,30 @@
 import { useState } from "react";
 import InputField from "./components/InputField";
-import { Button, Select } from "@chakra-ui/react";
-import { useNavigate } from "react-router-dom";
+import { Select } from "@chakra-ui/react";
 import { addDoc, collection } from "firebase/firestore";
 import { db } from "../../config/firebase";
 import { useUser } from "../../contexts/userContext";
-
+import RazorpayCheckout from "./Checkout/RazorpayCheckOut";
 
 const Consultation = () => {
+	const { user } = useUser();
 	const [name, setName] = useState();
 	const [age, setAge] = useState();
 	const [speciality, setSpeciality] = useState("");
 	const [gender, setGender] = useState("");
-	const nav = useNavigate();
-	const { user } = useUser();
 	const [image, setImage] = useState(null);
-
+	const [filled, setFilled] = useState(false);
+	const [paid, setPaid] = useState(false);
 	const saveDataToDB = async () => {
-		const patientData = { name, age, speciality, gender,image, user };
+		const patientData = { name, age, speciality, gender, image, user };
 		await addDoc(collection(db, "PHI"), patientData);
 		console.log("Patient details saved successfully!");
 	};
 	const submitPatientForm = (e) => {
 		e.preventDefault();
 		if (name && age && gender && speciality) {
-			nav("/pay");
-			saveDataToDB();
+			setFilled(true);
+			paid && saveDataToDB();
 		} else {
 			alert("Please fill all fields");
 		}
@@ -74,9 +73,7 @@ const Consultation = () => {
 					</Select>
 				</div>
 				<div className="flex gap-3 items-center">
-					<span className="font-semibold">
-						Add Attachment (optional) :
-					</span>
+					<span className="font-semibold">Add Attachment (optional) :</span>
 					<input
 						type="file"
 						id="photo"
@@ -84,12 +81,10 @@ const Consultation = () => {
 							setImage(e.target.value);
 						}}></input>
 				</div>
-				<Button
-					type="submit"
-					colorScheme="teal"
-					className="w-full">
-					Proceed to Consulatation
-				</Button>
+				<RazorpayCheckout
+					filled={filled}
+					paymentFunction={setPaid}
+				/>
 			</form>
 		</div>
 	);

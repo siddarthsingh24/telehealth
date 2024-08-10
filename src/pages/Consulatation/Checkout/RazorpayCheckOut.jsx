@@ -1,8 +1,9 @@
+/* eslint-disable react/prop-types */
 import { Button } from '@chakra-ui/react';
 import { useUser } from '../../../contexts/userContext';
 import { useNavigate } from 'react-router-dom';
 
-const RazorpayCheckout = () => {
+const RazorpayCheckout = ({filled,paymentFunction}) => {
   const {user}=useUser();
   const nav = useNavigate();
   const handlePayment = () => {
@@ -13,8 +14,11 @@ const RazorpayCheckout = () => {
       name: 'Teleheath',
       description: 'Test Transaction',
       handler: function (response) {
-        alert(`Payment successful: ${response.razorpay_payment_id}`);
         console.log(`Payment successful: ${response.razorpay}`);
+        paymentFunction(true);
+        // Save the payment details to the database
+        
+
         nav("/chat")
         
       },
@@ -31,9 +35,13 @@ const RazorpayCheckout = () => {
   };
 
   return (
-    <div>
-      <Button variant={'solid'} colorScheme='teal' onClick={handlePayment}>Pay &#8377;200 and Proceed to TeleChat!</Button>
-    </div>
+    <>
+      <Button type='submit' variant={'solid'} width={'100%'} colorScheme='teal' onClick={()=>{
+        if (filled) {
+          handlePayment()
+        }
+        }}>Submit and Pay Fee</Button>
+    </>
   );
 };
 

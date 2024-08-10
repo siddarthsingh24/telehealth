@@ -18,6 +18,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../contexts/AuthContext";
 import { doc, updateDoc } from "firebase/firestore";
+import RazorpayCheckout from "./RazorpayCheckOut";
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_KEY);
 

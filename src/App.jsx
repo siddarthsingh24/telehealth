@@ -8,8 +8,6 @@ import Consultation from "./pages/Consulatation/Consultation";
 import ErrorPage from "./pages/ErrorPage";
 import Header from "./components/Header";
 import Chat from "./pages/Consulatation/Chat/Chat";
-import RazorpayCheckout from "./pages/Consulatation/Checkout/RazorpayCheckOut";
-
 function App() {
 	return (
 		<>
@@ -30,10 +28,6 @@ function App() {
 								<Route
 									path="/consultation"
 									element={<Consultation/>}
-								/>
-								<Route
-									path="/pay"
-									element={<RazorpayCheckout/>}
 								/>
 								<Route
 									path="/chat"
