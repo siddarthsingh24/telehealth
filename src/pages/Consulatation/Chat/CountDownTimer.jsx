@@ -30,7 +30,7 @@ const CountdownTimer = ({ initialSeconds,onCountdownEnd }) => {
 	};
 
 	return (
-		<div className="bg-red-500 text-white rounded-full px-3 flex items-center flex-col">
+		<div className="bg-red-500 text-white rounded-xl px-3 m-1 flex items-center flex-col">
             <h1 className="font-poppins font-medium">Time Remaning:</h1>
 			<p>{formatTime(seconds)}</p>
 

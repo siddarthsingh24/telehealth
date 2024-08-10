@@ -10,14 +10,18 @@ export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
   useEffect(() => {
     auth.onAuthStateChanged(user=>{
-      console.log("auth state changed");
-      setCurrentUser(user)});
+      console.log("auth state changed",user);
+      setCurrentUser(user)
+    });
     const unsubscribe = auth.onAuthStateChanged((user) => {
       setCurrentUser(user);
     });
     return unsubscribe;
   }, []);
-
+  useEffect(()=>{
+    console.log("current user updated ",currentUser);
+    
+  },[currentUser])
   return (
     <AuthContext.Provider value={{ currentUser }}>
       {children}

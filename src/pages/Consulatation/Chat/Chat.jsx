@@ -8,7 +8,7 @@ import SpeechRecognition, {
 } from "react-speech-recognition";
 import CountdownTimer from "./CountDownTimer";
 import { useNavigate } from "react-router-dom";
-import {db} from '../../../config/firebase'
+import { db } from '../../../config/firebase';
 import { useAuth } from "../../../contexts/AuthContext";
 import { updateDoc } from "firebase/firestore";
 
@@ -20,15 +20,7 @@ const Chat = () => {
 	const chatEndRef = useRef(null);
 	const { transcript } = useSpeechRecognition();
 	const navigate = useNavigate();
-  const {currentUser}=useAuth();
-	// Predefined responses for common medical queries
-	const predefinedResponses = {
-		headache:
-			"For a headache, ensure you're hydrated and consider resting in a quiet, dark room. If the headache persists or is severe, consult a healthcare provider.",
-		fever:
-			"If you have a fever, rest and stay hydrated. You may use over-the-counter medications like acetaminophen or ibuprofen to manage your symptoms. If the fever lasts more than a few days or is very high, seek medical advice.",
-		// Add more predefined responses based on common symptoms or questions
-	};
+	const { currentUser } = useAuth();
 
 	const getTranscript = () => {
 		if (listening) {
@@ -41,28 +33,19 @@ const Chat = () => {
 		}
 	};
 
+	const formatResponse = (text) => {
+		// Remove triple asterisks and format the text
+		return text.replace(/\*\*\*/g, '').replace(/\*\*/g, '').replace(/\n/g, '<br/>');
+	};
+
 	const handleSubmit = async (e) => {
 		e?.preventDefault();
 		if (!input.trim()) return;
 
-		// Check for predefined responses
-		const lowercasedInput = input.toLowerCase();
-		const predefinedResponse = Object.keys(predefinedResponses).find((key) =>
-			lowercasedInput.includes(key)
-		);
+		const updatedMessages = [...messages, { text: input, type: 'user' }];
+		const conversationContext = updatedMessages.map(msg => `${msg.type === 'user' ? 'Patient' : 'Doctor'}: ${msg.text}`).join('\n');
 
-		if (predefinedResponse) {
-			setMessages([
-				...messages,
-				{ text: input, type: "user" },
-				{ text: predefinedResponses[predefinedResponse], type: "bot" },
-			]);
-			setInput("");
-			return;
-		}
-
-		// Default prompt with role description
-		const prompt = `You are Doctor, a healthcare consultant. A patient is asking: "${input}". Please respond like a doctor and suggest medications and suggestions. Don't ask many questions and conclude the chat after 10 conversations by suggesting medicines at last. Don't say that you are an AI, act like a doctor.`;
+		const prompt = `You are a doctor. Continue this conversation as a doctor and respond to the patient's query appropriately.\n\n${conversationContext}\nDoctor:`;
 
 		setMessages([...messages, { text: input, type: "user" }]);
 		setInput("");
@@ -90,7 +73,7 @@ const Chat = () => {
 				setMessages([
 					...messages,
 					{ text: input, type: "user" },
-					{ text: botMessage, type: "bot" },
+					{ text: formatResponse(botMessage), type: "bot" },
 				]);
 			} else {
 				setMessages([
@@ -120,13 +103,9 @@ const Chat = () => {
 					),
 				]);
 
-				// Send the timestamp to the database
-				// db.collection("messages").add({
-				//   timestamp: timestamp,
-				// })
-				await updateDoc(db, "Users",currentUser?.id,{
-          firstMessageTimestamp: timestamp,
-        })
+				await updateDoc(db, "Users", currentUser?.id, {
+					firstMessageTimestamp: timestamp,
+				})
 					.then(() => {
 						console.log("Timestamp sent to the database");
 					})
@@ -135,7 +114,8 @@ const Chat = () => {
 					});
 			}
 		})();
-	}, [messages]);
+	}, [currentUser?.id, messages]);
+
 	useEffect(() => {
 		chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
 	}, [messages]);
@@ -144,11 +124,19 @@ const Chat = () => {
 		setInput(transcript);
 	}, [transcript]);
 
-  useEffect(()=>{
-    
-  },[])
 	return (
 		<>
+		<div className="absolute top-16 left-0">
+				<CountdownTimer
+					initialSeconds={"2000"}
+					onCountdownEnd={() => {
+						alert("TIMES UP");
+						setTimeout(() => {
+							navigate("/consultation");
+						}, 1000);
+					}}
+				/>
+			</div>
 			<div className="w-[80vw] h-[80%] overflow-y-hidden overflow-scroll mx-auto py-2 border rounded-lg shadow-lg absolute bg-black/10">
 				<div className="chat-messages h-[92%] rounded-xl p-4 w-full space-y-4 mb-4 overflow-y-scroll overflow-scroll px-2">
 					{messages.map((message, index) => (
@@ -158,9 +146,9 @@ const Chat = () => {
 								message.type === "user"
 									? "bg-teal-500 text-white self-end"
 									: "bg-gray-200 text-black self-start"
-							}`}>
-							{message.text}
-						</div>
+							}`}
+							dangerouslySetInnerHTML={{ __html: message.text }} // Use this to render HTML content
+						/>
 					))}
 					{loading && (
 						<div className="message p-2 rounded-lg bg-gray-200 text-black">
@@ -198,17 +186,7 @@ const Chat = () => {
 					</Button>
 				</form>
 			</div>
-			<div className="absolute bottom-0 left-0">
-				<CountdownTimer
-					initialSeconds={"60"}
-					onCountdownEnd={() => {
-						alert("TIMES UP");
-						setTimeout(() => {
-							navigate("/consultation");
-						}, 1000);
-					}}
-				/>
-			</div>
+			
 		</>
 	);
 };

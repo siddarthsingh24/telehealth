@@ -1,8 +1,10 @@
 import { Button } from '@chakra-ui/react';
 import { useUser } from '../../../contexts/userContext';
+import { useNavigate } from 'react-router-dom';
 
 const RazorpayCheckout = () => {
   const {user}=useUser();
+  const nav = useNavigate();
   const handlePayment = () => {
     const options = {
       key: 'rzp_test_8CZ2uFiU8B2sbz', 
@@ -13,6 +15,7 @@ const RazorpayCheckout = () => {
       handler: function (response) {
         alert(`Payment successful: ${response.razorpay_payment_id}`);
         console.log(`Payment successful: ${response.razorpay}`);
+        nav("/chat")
         
       },
       prefill: {
