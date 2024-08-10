@@ -19,12 +19,14 @@ const Header = () => {
 
   useEffect(() => {
     console.log("refresh header...");
+   if(currentUser) { 
     const loadUser = async ()=>{
       const userRef = doc(db, "Users", currentUser?.uid);
       const userSnap = await getDoc(userRef);
       setUser(userSnap.data());
     }
     loadUser();
+  }
   }, [currentUser])
   
 	return (

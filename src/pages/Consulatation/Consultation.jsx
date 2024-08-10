@@ -1,10 +1,10 @@
 import { useState } from "react";
 import InputField from "./components/InputField";
-import {
-	Button,
-	Select,
-} from "@chakra-ui/react";
+import { Button, Select } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
+import { addDoc, collection } from "firebase/firestore";
+import { db } from "../../config/firebase";
+import { useUser } from "../../contexts/userContext";
 
 
 const Consultation = () => {
@@ -13,18 +13,29 @@ const Consultation = () => {
 	const [speciality, setSpeciality] = useState("");
 	const [gender, setGender] = useState("");
 	const nav = useNavigate();
+	const { user } = useUser();
+	const [image, setImage] = useState(null);
+
+	const saveDataToDB = async () => {
+		const patientData = { name, age, speciality, gender,image, user };
+		await addDoc(collection(db, "PHI"), patientData);
+		console.log("Patient details saved successfully!");
+	};
 	const submitPatientForm = (e) => {
 		e.preventDefault();
-		console.log(name, age, speciality,gender);
+		if (name && age && gender && speciality) {
+			nav("/pay");
+			saveDataToDB();
+		} else {
+			alert("Please fill all fields");
+		}
 	};
 	return (
 		<div className="bg-teal-500/20 text-teal-900 rounded-xl space-y-4 p-2 shadow-md">
 			<form
 				onSubmit={submitPatientForm}
 				className="space-y-4 p-3">
-				<span className="font-bold font-poppins">
-					Fill this form to begin
-				</span>
+				<span className="font-bold font-poppins">Fill this form to begin</span>
 				<InputField
 					type={"Name"}
 					setter={setName}
@@ -62,17 +73,21 @@ const Consultation = () => {
 						})}
 					</Select>
 				</div>
+				<div className="flex gap-3 items-center">
+					<span className="font-semibold">
+						Add Attachment (optional) :
+					</span>
+					<input
+						type="file"
+						id="photo"
+						onChange={(e) => {
+							setImage(e.target.value);
+						}}></input>
+				</div>
 				<Button
 					type="submit"
 					colorScheme="teal"
-					className="w-full"
-					onClick={() => {
-						if (name && age && gender && speciality) {
-							nav("/pay");
-						} else {
-							alert("Please fill all fields");
-						}
-					}}>
+					className="w-full">
 					Proceed to Consulatation
 				</Button>
 			</form>
