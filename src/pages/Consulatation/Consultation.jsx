@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import InputField from "./components/InputField";
 import { Select } from "@chakra-ui/react";
-import { addDoc, collection } from "firebase/firestore";
+import { addDoc, collection, doc, getDoc } from "firebase/firestore";
 import { db } from "../../config/firebase";
 import { useUser } from "../../contexts/userContext";
 import RazorpayCheckout from "./Checkout/RazorpayCheckOut";
+import { useNavigate } from "react-router-dom";
 
 const Consultation = () => {
 	const { user } = useUser();
@@ -15,6 +16,9 @@ const Consultation = () => {
 	const [image, setImage] = useState(null);
 	const [filled, setFilled] = useState(false);
 	const [paid, setPaid] = useState(false);
+	const [paymentData, setPaymentData] = useState(null);
+	const [navToChat, setNavToChat] = useState(false);
+	const nav = useNavigate();
 	const saveDataToDB = async () => {
 		const patientData = { name, age, speciality, gender, image, user };
 		await addDoc(collection(db, "PHI"), patientData);
@@ -29,6 +33,41 @@ const Consultation = () => {
 			alert("Please fill all fields");
 		}
 	};
+
+	const getPaymentDetails = async () => {
+		const docRef = doc(db, "Users", user.id);
+		const docSnap = await getDoc(docRef);
+		setPaymentData(docSnap.data());
+	};
+	useEffect(() => {
+		if (user) {
+			getPaymentDetails();
+		}
+	}, [user]);
+	useEffect(() => {
+		if (paymentData) {
+			console.log(paymentData.paymentTimestamp.seconds);
+			const date = new Date(paymentData.paymentTimestamp)
+			const now = new Date();
+			console.log(date);
+
+			if (
+				date.getDate() === now.getDate() &&
+				date.getMonth() === now.getMonth() &&
+				date.getFullYear() === now.getFullYear()
+			) {
+				const condition = (now.getTime()-date.getTime())/60000;
+				if(condition<=30){
+					setNavToChat(true);
+				}
+			}
+		}
+	}, [paymentData]);
+	useEffect(() => {
+		if (navToChat) {
+			nav("/chat");
+		}
+	}, [navToChat]);
 	return (
 		<div className="bg-teal-500/20 text-teal-900 rounded-xl space-y-4 p-2 shadow-md">
 			<form
