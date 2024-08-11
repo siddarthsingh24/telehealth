@@ -8,7 +8,7 @@ import SpeechRecognition, {
 } from "react-speech-recognition";
 import CountdownTimer from "./CountDownTimer";
 import { useNavigate } from "react-router-dom";
-import { db } from '../../../config/firebase';
+import { db } from "../../../config/firebase";
 import { useAuth } from "../../../contexts/AuthContext";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { useUser } from "../../../contexts/userContext";
@@ -24,8 +24,10 @@ const Chat = () => {
 	const { currentUser } = useAuth();
 	const [paymentData, setPaymentData] = useState(null);
 	const [navToConsult, setnavToConsult] = useState(false);
-	const {user}=useUser();
+	const [timer, setTimer] = useState(0);
+	const { user } = useUser();
 	const nav = useNavigate();
+	const [showTimer, setShowTimer] = useState(false);
 	const getPaymentDetails = async () => {
 		const docRef = doc(db, "Users", user.id);
 		const docSnap = await getDoc(docRef);
@@ -37,9 +39,10 @@ const Chat = () => {
 		}
 	}, [user]);
 	useEffect(() => {
+		console.log("Payment");
 		if (paymentData?.paymentTimestamp) {
 			console.log(paymentData.paymentTimestamp.seconds);
-			const date = new Date(paymentData.paymentTimestamp)
+			const date = new Date(paymentData.paymentTimestamp);
 			const now = new Date();
 			console.log(date);
 
@@ -48,19 +51,23 @@ const Chat = () => {
 				date.getMonth() === now.getMonth() &&
 				date.getFullYear() === now.getFullYear()
 			) {
-				const condition = (now.getTime()-date.getTime())/60000;
-				if(condition>=30){
-					setnavToConsult(true);
+				const condition = (now.getTime() - date.getTime()) / 60000;
+				setTimer(condition * 60);
+				if (condition ==0) {
+					setnavToConsult(true)					
 				}
 			}
-		}
+		} 
+
 	}, [paymentData]);
 	useEffect(() => {
 		if (navToConsult) {
 			nav("/consultation");
 		}
 	}, [navToConsult]);
-
+	useEffect(() => {
+		setShowTimer(true);
+	}, [timer]);
 	const getTranscript = () => {
 		if (listening) {
 			SpeechRecognition.stopListening();
@@ -73,15 +80,22 @@ const Chat = () => {
 	};
 
 	const formatResponse = (text) => {
-		return text.replace(/\*\*\*/g, '').replace(/\*\*/g, '').replace(/\n/g, '<br/>');
+		return text
+			.replace(/\*\*\*/g, "")
+			.replace(/\*\*/g, "")
+			.replace(/\n/g, "<br/>");
 	};
 
 	const handleSubmit = async (e) => {
 		e?.preventDefault();
 		if (!input.trim()) return;
 
-		const updatedMessages = [...messages, { text: input, type: 'user' }];
-		const conversationContext = updatedMessages.map(msg => `${msg.type === 'user' ? 'Patient' : 'Doctor'}: ${msg.text}`).join('\n');
+		const updatedMessages = [...messages, { text: input, type: "user" }];
+		const conversationContext = updatedMessages
+			.map(
+				(msg) => `${msg.type === "user" ? "Patient" : "Doctor"}: ${msg.text}`
+			)
+			.join("\n");
 
 		const prompt = `You are a doctor. Continue this conversation as a doctor and respond to the patient's query appropriately.\n\n${conversationContext}\nDoctor:`;
 
@@ -164,17 +178,19 @@ const Chat = () => {
 
 	return (
 		<>
-		<div className="absolute top-16 left-0">
-				<CountdownTimer
-					initialSeconds={"2000"}
-					onCountdownEnd={() => {
-						alert("TIMES UP");
-						setTimeout(() => {
-							navigate("/consultation");
-						}, 1000);
-					}}
-				/>
-			</div>
+			{showTimer && timer!==0 && (
+				<div className="absolute top-16 left-0">
+					<CountdownTimer
+						initialSeconds={1800 - timer}
+						onCountdownEnd={() => {
+							alert("TIMES UP");
+							setTimeout(() => {
+								navigate("/consultation");
+							}, 1000);
+						}}
+					/>
+				</div>
+			)}
 			<div className="w-[80vw] h-[80%] overflow-y-hidden overflow-scroll mx-auto py-2 border rounded-lg shadow-lg absolute bg-black/10">
 				<div className="chat-messages h-[92%] rounded-xl p-4 w-full space-y-4 mb-4 overflow-y-scroll overflow-scroll px-2">
 					{messages.map((message, index) => (
@@ -224,7 +240,6 @@ const Chat = () => {
 					</Button>
 				</form>
 			</div>
-			
 		</>
 	);
 };
