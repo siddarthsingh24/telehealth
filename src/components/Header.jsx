@@ -36,9 +36,6 @@ const Header = () => {
       </div>
 
       <Flex alignItems={"center"} justifyContent={"center"} gap={"1vw"}>
-        <div className="p-2 hover:bg-teal-900/20 rounded-full cursor-pointer transition-all duration-200">
-          <IoGrid/>
-        </div>
         <div>
           {user ? (
             <div className="flex items-center gap-3 select-none font-semibold">

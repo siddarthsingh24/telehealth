@@ -175,7 +175,7 @@ const Chat = () => {
 	return (
 		<>
 			{showTimer && timer!==0 && (
-				<div className="absolute top-16 left-0">
+				<div className="absolute z-50 top-5">
 					<CountdownTimer
 						initialSeconds={1800 - timer}
 						onCountdownEnd={() => {
@@ -188,7 +188,7 @@ const Chat = () => {
 				</div>
 			)}
 			<div className="w-[80vw] h-[80%] overflow-y-hidden overflow-scroll mx-auto py-2 border rounded-lg shadow-lg absolute bg-black/10">
-				<div className="chat-messages h-[92%] rounded-xl p-4 w-full space-y-4 mb-4 overflow-y-scroll overflow-scroll px-2">
+				<div className="chat-messages h-[92%] rounded-xl p-4 w-full space-y-4 mb-4 overflow-y-scroll overflow-scroll px-2 flex flex-col">
 					{messages.map((message, index) => (
 						<div
 							key={index}
