@@ -62,10 +62,10 @@ const Home = () => {
 				</div>
 			</div>
 			<img
-				src="/MockUp.png"
-				alt="stock-image"
-				className="hidden sm:hidden md:block lg:block absolute right-0 bottom-0"
-			/>
+  src="/MockUp.png"
+  alt="stock-image"
+  className="hidden sm:hidden md:block lg:block absolute top-3 bottom-3 right-0 w-70 h-70"
+/>
 			
 		</div>
 	);
