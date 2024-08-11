@@ -18,7 +18,6 @@ const Header = () => {
   const {currentUser}=useAuth();
 
   useEffect(() => {
-    console.log("refresh header...");
    if(currentUser) { 
     const loadUser = async ()=>{
       const userRef = doc(db, "Users", currentUser?.uid);

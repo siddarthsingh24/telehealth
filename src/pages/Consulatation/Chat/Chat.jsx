@@ -39,13 +39,9 @@ const Chat = () => {
 		}
 	}, [user]);
 	useEffect(() => {
-		console.log("Payment");
 		if (paymentData?.paymentTimestamp) {
-			console.log(paymentData.paymentTimestamp.seconds);
 			const date = new Date(paymentData.paymentTimestamp);
 			const now = new Date();
-			console.log(date);
-
 			if (
 				date.getDate() === now.getDate() &&
 				date.getMonth() === now.getMonth() &&

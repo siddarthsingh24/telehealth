@@ -4,12 +4,7 @@ import { useEffect, useState } from "react";
 const CountdownTimer = ({ initialSeconds,onCountdownEnd }) => {
 
 	const [seconds, setSeconds] = useState(Math.trunc(initialSeconds));
-	useEffect(()=>{
-		console.log(initialSeconds);
-		
-	},[])
 	useEffect(() => {
-		console.log(seconds);
 		// Exit early if countdown is finished
 		if (seconds <= 0) {
             onCountdownEnd();
