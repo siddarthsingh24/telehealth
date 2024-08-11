@@ -10,7 +10,8 @@ import CountdownTimer from "./CountDownTimer";
 import { useNavigate } from "react-router-dom";
 import { db } from '../../../config/firebase';
 import { useAuth } from "../../../contexts/AuthContext";
-import { updateDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { useUser } from "../../../contexts/userContext";
 
 const Chat = () => {
 	const [input, setInput] = useState("");
@@ -21,6 +22,44 @@ const Chat = () => {
 	const { transcript } = useSpeechRecognition();
 	const navigate = useNavigate();
 	const { currentUser } = useAuth();
+	const [paymentData, setPaymentData] = useState(null);
+	const [navToConsult, setnavToConsult] = useState(false);
+	const {user}=useUser();
+	const nav = useNavigate();
+	const getPaymentDetails = async () => {
+		const docRef = doc(db, "Users", user.id);
+		const docSnap = await getDoc(docRef);
+		setPaymentData(docSnap.data());
+	};
+	useEffect(() => {
+		if (user) {
+			getPaymentDetails();
+		}
+	}, [user]);
+	useEffect(() => {
+		if (paymentData?.paymentTimestamp) {
+			console.log(paymentData.paymentTimestamp.seconds);
+			const date = new Date(paymentData.paymentTimestamp)
+			const now = new Date();
+			console.log(date);
+
+			if (
+				date.getDate() === now.getDate() &&
+				date.getMonth() === now.getMonth() &&
+				date.getFullYear() === now.getFullYear()
+			) {
+				const condition = (now.getTime()-date.getTime())/60000;
+				if(condition>=30){
+					setnavToConsult(true);
+				}
+			}
+		}
+	}, [paymentData]);
+	useEffect(() => {
+		if (navToConsult) {
+			nav("/consultation");
+		}
+	}, [navToConsult]);
 
 	const getTranscript = () => {
 		if (listening) {
@@ -34,7 +73,6 @@ const Chat = () => {
 	};
 
 	const formatResponse = (text) => {
-		// Remove triple asterisks and format the text
 		return text.replace(/\*\*\*/g, '').replace(/\*\*/g, '').replace(/\n/g, '<br/>');
 	};
 
