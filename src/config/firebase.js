@@ -8,13 +8,13 @@ import { getFirestore } from "firebase/firestore";
 import { getFunctions } from "firebase/functions";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyB8ku_G864y_TMIoryl_Ho3JsYaKBYiOds",
-  authDomain: "telehealth-solution.firebaseapp.com",
-  projectId: "telehealth-solution",
-  storageBucket: "telehealth-solution.appspot.com",
-  messagingSenderId: "997427233480",
-  appId: "1:997427233480:web:df0c63eaf7b57a09915bfd",
-  measurementId: "G-WL979WFDQ5"
+  apiKey: "",
+  authDomain: "",
+  projectId: ""
+  storageBucket: "",
+  messagingSenderId: "",
+  appId: "",
+  measurementId: ""
 };
 
 const app = initializeApp(firebaseConfig);
