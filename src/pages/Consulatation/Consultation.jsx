@@ -17,17 +17,16 @@ const Consultation = () => {
 	const [filled, setFilled] = useState(false);
 	const [paid, setPaid] = useState(false);
 	const [paymentData, setPaymentData] = useState(null);
-	const [navToChat, setNavToChat] = useState(false);
+	const [NavToConsult, setNavToConsult] = useState(false);
 	const nav = useNavigate();
 	const saveDataToDB = async () => {
 		const patientData = { name, age, speciality, gender, image, user };
 		await addDoc(collection(db, "PHI"), patientData);
-		console.log("Patient details saved successfully!");
+
 	};
 	const submitPatientForm = (e) => {
 		e.preventDefault();
-		if (name && age && gender && speciality) {
-			setFilled(true);
+		if (filled) {
 			paid && saveDataToDB();
 		} else {
 			alert("Please fill all fields");
@@ -40,12 +39,18 @@ const Consultation = () => {
 		setPaymentData(docSnap.data());
 	};
 	useEffect(() => {
+		if (name && age && gender && speciality) {
+			setFilled(true);
+		}
+	}, [name, age, gender, speciality])
+	
+	useEffect(() => {
 		if (user) {
 			getPaymentDetails();
 		}
 	}, [user]);
 	useEffect(() => {
-		if (paymentData) {
+		if (paymentData?.paymentTimestamp) {
 			console.log(paymentData.paymentTimestamp.seconds);
 			const date = new Date(paymentData.paymentTimestamp)
 			const now = new Date();
@@ -57,17 +62,17 @@ const Consultation = () => {
 				date.getFullYear() === now.getFullYear()
 			) {
 				const condition = (now.getTime()-date.getTime())/60000;
-				if(condition<=30){
-					setNavToChat(true);
+				if(condition>=30){
+					setNavToConsult(true);
 				}
 			}
 		}
 	}, [paymentData]);
 	useEffect(() => {
-		if (navToChat) {
-			nav("/chat");
+		if (NavToConsult) {
+			nav("/");
 		}
-	}, [navToChat]);
+	}, [NavToConsult]);
 	return (
 		<div className="bg-teal-500/20 text-teal-900 rounded-xl space-y-4 p-2 shadow-md">
 			<form
@@ -112,7 +117,7 @@ const Consultation = () => {
 					</Select>
 				</div>
 				<div className="flex gap-3 items-center">
-					<span className="font-semibold">Add Attachment (optional) :</span>
+					<span className="font-semibold">Add Attachment (if any) :</span>
 					<input
 						type="file"
 						id="photo"
